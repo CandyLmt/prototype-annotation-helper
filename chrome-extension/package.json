@@ -1,0 +1,17 @@
+{
+  "name": "prototype-annotation-assistant",
+  "version": "1.0.0",
+  "description": "在任意网页上选中元素，添加功能注释和说明",
+  "type": "module",
+  "scripts": {
+    "build": "esbuild background.js --bundle --outfile=dist/background.js --format=esm",
+    "watch": "esbuild background.js --bundle --outfile=dist/background.js --format=esm --watch"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.39.0",
+    "cross-fetch": "^4.1.0"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.0"
+  }
+}

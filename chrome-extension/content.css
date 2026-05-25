@@ -1,0 +1,276 @@
+.annotation-highlight {
+  outline: 2px solid #8b5cf6 !important;
+  outline-offset: 4px !important;
+  background-color: rgba(139, 92, 246, 0.06) !important;
+  border-radius: 10px !important;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-shadow: 0 0 20px rgba(139, 92, 246, 0.15) !important;
+  animation: pulseHighlight 2s ease-in-out infinite;
+}
+
+@keyframes pulseHighlight {
+  0%, 100% { box-shadow: 0 0 20px rgba(139, 92, 246, 0.15); }
+  50% { box-shadow: 0 0 30px rgba(139, 92, 246, 0.25); }
+}
+
+.annotation-marker {
+  position: absolute;
+  z-index: 999999;
+  cursor: pointer;
+  font-size: 14px;
+  line-height: 1;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.annotation-marker:hover {
+  transform: scale(1.15);
+}
+
+.annotation-badge {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(135deg, #e6c4fe 0%, #d4c0fe 30%, #c8d4fe 60%, #d2c4fe 100%);
+  border-radius: 14px;
+  width: 28px;
+  height: 28px;
+  text-align: center;
+  line-height: 28px;
+  box-shadow: 0 8px 28px rgba(230, 196, 254, 0.45), 0 4px 12px rgba(168, 230, 255, 0.15), inset 0 2px 6px rgba(255, 255, 255, 0.7);
+  color: #6d28d9;
+  font-size: 12px;
+  font-weight: 600;
+  font-family: -apple-system, BlinkMacSystemFont, sans-serif;
+  position: relative;
+  overflow: hidden;
+}
+
+.annotation-badge::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.35) 0%, transparent 100%);
+}
+
+.annotation-editor {
+  position: fixed;
+  z-index: 1000000;
+  width: 340px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(248, 246, 255, 0.92) 40%, rgba(244, 248, 255, 0.9) 60%, rgba(248, 244, 255, 0.93) 100%);
+  backdrop-filter: blur(40px);
+  -webkit-backdrop-filter: blur(40px);
+  border-radius: 20px;
+  box-shadow: 0 30px 100px rgba(139, 92, 246, 0.25), 0 15px 50px rgba(139, 92, 246, 0.15), 0 5px 20px rgba(0, 0, 0, 0.08), inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+  font-size: 14px;
+  overflow: hidden;
+  border: 1px solid rgba(230, 196, 254, 0.3);
+}
+
+.annotation-editor-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 17px 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.85) 0%, rgba(248, 246, 255, 0.75) 40%, rgba(244, 248, 255, 0.7) 60%, rgba(248, 244, 255, 0.8) 100%);
+  color: #4c1d95;
+  position: relative;
+  backdrop-filter: blur(30px);
+  -webkit-backdrop-filter: blur(30px);
+  border-bottom: 1px solid rgba(230, 196, 254, 0.18);
+}
+
+.annotation-editor-header::before {
+  content: '';
+  position: absolute;
+  top: -50%;
+  left: -50%;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle at 25% 25%, rgba(230, 196, 254, 0.22) 0%, transparent 45%),
+              radial-gradient(circle at 75% 75%, rgba(168, 230, 255, 0.16) 0%, transparent 45%);
+}
+
+.annotation-editor-header::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.8), transparent);
+}
+
+.annotation-editor-title {
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: -0.4px;
+  position: relative;
+  z-index: 1;
+  background: linear-gradient(135deg, #4c1d95 0%, #6d28d9 50%, #7c3aed 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.annotation-editor-close {
+  background: rgba(139, 92, 246, 0.06);
+  border: 1px solid rgba(139, 92, 246, 0.12);
+  color: #7c3aed;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 0;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  z-index: 1;
+}
+
+.annotation-editor-close:hover {
+  background: rgba(139, 92, 246, 0.12);
+  border-color: rgba(139, 92, 246, 0.22);
+  transform: scale(1.05);
+}
+
+.annotation-editor-content {
+  padding: 20px;
+}
+
+.annotation-editor-user {
+  font-size: 12px;
+  color: #7c3aed;
+  margin-top: 12px;
+  font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.annotation-editor-user::before {
+  content: attr(data-initials);
+  width: 20px;
+  height: 20px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #e6c4fe 0%, #d4c0fe 100%);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: #6d28d9;
+  font-size: 10px;
+  font-weight: 600;
+}
+
+.annotation-editor-status {
+  font-size: 11px;
+  color: #a78bfa;
+  margin-top: 10px;
+  text-align: right;
+  opacity: 0.8;
+}
+
+.annotation-editor-textarea {
+  width: 100%;
+  height: 110px;
+  border: 1px solid rgba(230, 196, 254, 0.25);
+  border-radius: 14px;
+  padding: 14px;
+  font-family: inherit;
+  font-size: 14px;
+  resize: none;
+  outline: none;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+  background: rgba(255, 255, 255, 0.75);
+  color: #4c1d95;
+  line-height: 1.55;
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.annotation-editor-textarea:focus {
+  border-color: rgba(139, 92, 246, 0.4);
+  background: rgba(255, 255, 255, 0.95);
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.1), inset 0 2px 8px rgba(0, 0, 0, 0.03);
+}
+
+.annotation-editor-textarea::placeholder {
+  color: #a78bfa;
+  opacity: 0.6;
+}
+
+.annotation-editor-textarea:disabled {
+  background: rgba(248, 246, 255, 0.6);
+  color: #a78bfa;
+  cursor: not-allowed;
+}
+
+.annotation-editor-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  padding: 15px 20px;
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.75) 0%, rgba(248, 246, 255, 0.65) 100%);
+  border-top: 1px solid rgba(230, 196, 254, 0.15);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+}
+
+.annotation-editor-footer button {
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 13px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+  border: none;
+  letter-spacing: 0.2px;
+  position: relative;
+  overflow: hidden;
+}
+
+.annotation-editor-delete {
+  background: rgba(239, 68, 68, 0.06);
+  color: #ef4444;
+  border: 1px solid rgba(239, 68, 68, 0.12) !important;
+}
+
+.annotation-editor-delete:hover {
+  background: rgba(239, 68, 68, 0.12);
+  border-color: rgba(239, 68, 68, 0.22) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 20px rgba(239, 68, 68, 0.14);
+}
+
+.annotation-editor-save {
+  background: linear-gradient(135deg, #e6c4fe 0%, #d4c0fe 30%, #c8d4fe 60%, #d2c4fe 100%);
+  color: #6d28d9;
+  box-shadow: 0 8px 24px rgba(230, 196, 254, 0.35), 0 4px 10px rgba(168, 230, 255, 0.12);
+}
+
+.annotation-editor-save::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 50%;
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.3) 0%, transparent 100%);
+}
+
+.annotation-editor-save:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px rgba(230, 196, 254, 0.4), 0 6px 14px rgba(168, 230, 255, 0.15);
+}
+
+.annotation-editor-save:active {
+  transform: translateY(0);
+}
