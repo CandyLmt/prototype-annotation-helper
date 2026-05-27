@@ -146,37 +146,45 @@
     }
   }
 
+  let pendingLinkElement = null;
+
   function handleGlobalClick(e) {
     if (!isAnnotationMode) return;
-    
-    if (isBeforeUnloadDialogOpen) {
-      return;
-    }
     
     const target = e.target;
     
     if (isBrowserDialogElement(target)) {
       e.stopPropagation();
+      const textContent = target.textContent || '';
+      if (textContent.includes('离开') || textContent.includes('Leave')) {
+        pendingLinkElement = null;
+      }
       return;
     }
     
     const tagName = target.tagName.toLowerCase();
     
     if (tagName === 'a' && target.href) {
-      e.preventDefault();
-      e.stopPropagation();
+      pendingLinkElement = target;
+      console.log('📌 记录链接点击:', target.href);
     } else if (target.closest('a')) {
       const anchor = target.closest('a');
       if (anchor.href) {
-        e.preventDefault();
-        e.stopPropagation();
+        pendingLinkElement = anchor;
+        console.log('📌 记录链接点击(closest):', anchor.href);
       }
     } else if (tagName === 'form') {
-      e.preventDefault();
-      e.stopPropagation();
+      pendingLinkElement = target;
+      console.log('📌 记录表单提交');
     } else if (target.closest('form')) {
-      e.preventDefault();
-      e.stopPropagation();
+      pendingLinkElement = target.closest('form');
+      console.log('📌 记录表单提交(closest)');
+    } else if (target.closest('[onclick]') || target.closest('.btn') || target.closest('[role="button"]') || target.closest('button')) {
+      const clickable = target.closest('[onclick], .btn, [role="button"], button');
+      if (clickable) {
+        pendingLinkElement = clickable;
+        console.log('📌 记录可点击元素:', clickable);
+      }
     }
   }
 
@@ -187,25 +195,78 @@
   }
 
   let isBeforeUnloadDialogOpen = false;
+  let scheduledEditorCallback = null;
+  let isPageUnloading = false;
+
+  function handlePageLeave() {
+    console.log('📌 页面离开，清除定时器');
+    isPageUnloading = true;
+    pendingLinkElement = null;
+    if (scheduledEditorCallback) {
+      clearTimeout(scheduledEditorCallback);
+      scheduledEditorCallback = null;
+    }
+  }
 
   function handleBeforeUnload(e) {
     if (!isAnnotationMode) return;
+    if (!pendingLinkElement) return;
+    
     isBeforeUnloadDialogOpen = true;
     e.preventDefault();
     e.returnValue = '';
-    setTimeout(() => {
+    
+    const element = pendingLinkElement;
+    
+    window.addEventListener('unload', handlePageLeave);
+    window.addEventListener('pagehide', handlePageLeave);
+    
+    scheduledEditorCallback = setTimeout(() => {
+      window.removeEventListener('unload', handlePageLeave);
+      window.removeEventListener('pagehide', handlePageLeave);
+      scheduledEditorCallback = null;
+      
+      if (!pendingLinkElement || isPageUnloading) {
+        console.log('📌 用户选择离开');
+        isBeforeUnloadDialogOpen = false;
+        isPageUnloading = false;
+        return;
+      }
+      
+      console.log('📌 用户取消离开操作，显示注释编辑器');
+      const selector = generateSelector(element);
+      const rect = element.getBoundingClientRect();
+      
+      if (element.hasAttribute('href')) {
+        element.setAttribute('data-href', element.href);
+        element.removeAttribute('href');
+      }
+      
+      showEditor(rect, selector);
+      
+      pendingLinkElement = null;
       isBeforeUnloadDialogOpen = false;
-    }, 100);
+    }, 350);
+    
+    e.stopImmediatePropagation();
     return '';
   }
 
   function disableAllLinks() {
-    document.querySelectorAll('a[href]').forEach(anchor => {
-      if (!anchor.hasAttribute('data-original-href')) {
-        anchor.setAttribute('data-original-href', anchor.href);
-        anchor.removeAttribute('href');
+    document.querySelectorAll('a').forEach(anchor => {
+      if (!anchor.hasAttribute('data-annotation-click-handler')) {
+        anchor.setAttribute('data-annotation-click-handler', 'true');
+        anchor.addEventListener('click', handleAnchorClick, true);
       }
     });
+  }
+  
+  function handleAnchorClick(e) {
+    if (!isAnnotationMode) return;
+    
+    const anchor = e.currentTarget;
+    pendingLinkElement = anchor;
+    console.log('📌 锚点点击处理器记录链接:', anchor.href);
   }
 
   function restoreAllLinks() {
@@ -213,10 +274,24 @@
       anchor.setAttribute('href', anchor.getAttribute('data-original-href'));
       anchor.removeAttribute('data-original-href');
     });
+    document.querySelectorAll('a[data-original-onclick]').forEach(anchor => {
+      anchor.setAttribute('onclick', anchor.getAttribute('data-original-onclick'));
+      anchor.removeAttribute('data-original-onclick');
+    });
+    document.querySelectorAll('a[data-annotation-click-handler]').forEach(anchor => {
+      anchor.removeEventListener('click', handleAnchorClick, true);
+      anchor.removeAttribute('data-annotation-click-handler');
+    });
   }
 
   function highlightElement(e) {
     if (!isSelecting) return;
+    
+    const target = e.target;
+    if (target.closest('.annotation-editor')) {
+      return;
+    }
+    
     e.target.classList.add('annotation-highlight');
   }
 
@@ -240,6 +315,10 @@
     const target = e.target;
     
     if (isBrowserDialogElement(target)) {
+      return;
+    }
+    
+    if (target.closest('.annotation-editor')) {
       return;
     }
 
@@ -364,6 +443,7 @@
   }
 
   function showEditor(rect, selector) {
+    console.log('📌 显示注释编辑器:', selector, rect);
     let left = rect.right + 10;
     let top = rect.top;
 
